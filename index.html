@@ -225,7 +225,7 @@ function getColor(d) {
 function updateMap(fileNumber){
 //console.log(fileNumber)
 // Load in my states data!
-fileName = fileNumber + "_fires_each_state.csv"
+fileName = "./fires_each_state_by_year/" + fileNumber + "_fires_each_state.csv"
 svg.selectAll("path").remove();
 
 d3.csv(fileName, function(data) {
@@ -355,7 +355,7 @@ function continuous(selector_id, colorscale) {
 //resize();
 //d3.select(window).on("resize", resize);
 
-d3.csv("1992_fires_each_state.csv", function(data) {
+d3.csv("./fires_each_state_by_year/1992_fires_each_state.csv", function(data) {
 	var dataArray = [];
 	for (var d = 0; d < data.length; d++) {
 		dataArray.push(parseFloat(data[d].value))
