@@ -62,7 +62,7 @@ input[type=range]::-webkit-slider-thumb {
     height: 20px;
     width: 20px;
     border-radius: 20%;
-    background: rgb(255, 183, 0);
+    background: rgb(255, 183, 1);
     margin-top: -6px;
 }
 
@@ -73,7 +73,7 @@ input[type=range]:focus {
 input[type=range]:focus::-webkit-slider-runnable-track {
     background: #ccc;
 }
-
+/* #ccc; */
 input[type=range]:hover {
   opacity: .8;
 }
@@ -132,11 +132,14 @@ path:hover {
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.7.1/d3-tip.min.js"></script>
 
 </head>
-<body>
+<body style="background-color:#cccccc" onload="load()">
   <h1>Wildfires in USA in <span id="nRadius-value">1992</span></h1>  
   <div id="legend1" style="display: inline-block" position="absolute"></div>
+
+  <div style="position: absolute" style="top: 80px">
+    <input type="range"min="1992" max="2015" id="nRadius" step="1" value="1992" > <b><span id="nRadius-value2">1992</span></b>
+  </div>
   
-  <input type="range"min="1992" max="2015" id="nRadius" step="1" value="1992" > <b><span id="nRadius-value2">1992</span></b>
   
 
 
@@ -152,6 +155,11 @@ d3.select("#nRadius").on("input", function() {
   // d3.select("#nRadius").property("value", nRadius);
 });
 
+
+
+var yLegend = d3.scaleLinear()
+    .domain([1, 11])
+    .rangeRound([58, 300]);
 
 
 //Width and height of map
@@ -175,6 +183,228 @@ var svg = d3.select("body")
   .append("svg")
   .attr("width", width)
   .attr("height", height);
+
+
+var color = d3.scaleThreshold()
+    .domain(d3.range(2, 18))
+    .range(d3.schemeYlOrRd[9]);
+
+var color_inverse = d3.scaleThreshold()
+    .domain(d3.schemeYlOrRd[9])
+    .range(d3.range(2, 28));
+
+
+length = 20,
+color2 = d3.scaleLinear()
+      .domain([1,length])
+      .interpolate(d3.interpolateHcl)
+      .range([d3.rgb("#007AFF"), d3.rgb('#FFF500')]);
+
+// var color = d3.scaleSequential()
+//     .domain(d3.range(2, 18))
+//     .range(d3.schemeYlOrRd[9]);
+
+var g = svg.append("g");
+/*The title of the d3 map*/
+svg.append("text")
+        .attr("x",400)             
+        .attr("y",20)
+        .attr("font-family", "sans-serif")
+        .style("font-size", "20px") 
+        .style("font-weight", "bold") 
+        .text("");
+
+svg.append("input-range")
+        .attr("x",400)             
+        .attr("y",20)
+        .attr("font-family", "sans-serif")
+        .style("font-size", "20px") 
+        .style("font-weight", "bold") 
+        .text("");
+
+
+/*Build the vertical legend: create the rectangles, fill with the appropriate color scale*/
+g.selectAll("rect")
+  .data(color.range().map(function(d) {
+      d = color.invertExtent(d);
+      if (d[0] == null) d[0] = yLegend.domain()[0];
+      if (d[1] == null) d[1] = yLegend.domain()[1];
+      return d;
+    }))
+  .enter().append("rect")
+    .attr("height", 25)
+    .attr("x",-50 )
+    .attr("y", function(d) { 
+      return yLegend(d[0])+12; })
+    .attr("width", 33)
+    .attr("fill", function(d) { return color(d[0]); })
+    .attr("col", function(d) { return d[0]})
+    .on('mouseover', function input() {
+      d3.selectAll("rect")
+      //.remove()
+      .transition()
+      .duration(200)
+      .style("opacity", .7)
+      d3.select(this)
+      .transition()
+      .duration(200)
+      .style("opacity", 1)
+				})
+    .on('click', function (dis, i, n) {
+      d3.selectAll("path").each(function(d) {
+        //var a = d["properties"]['value']
+        //console.log(d3.select(n[i]).attr("col"))
+        var opcaityOnClick = 0.3
+        if(d == null){
+          console.log("NK")
+          console.log(" is = " + d3.select(n[i]).attr("y"))
+        }else if(d["properties"]['value'] > 10000){
+          //d3.select(this).style("opacity", .5)
+        }
+        if(d3.select(n[i]).attr("y") == 70 && d != null){
+          if(d["properties"]['value'] > 1000){
+            d3.select(this).style("opacity", opcaityOnClick)
+          }
+          //console.log(d["properties"]['value'])
+        }
+        if(d3.select(n[i]).attr("y") == 94 && d != null){
+          if(d["properties"]['value'] < 1000 || d["properties"]['value'] > 2000){
+            d3.select(this).style("opacity", opcaityOnClick)
+          }
+          //console.log(d["properties"]['value'])
+        } 
+        if(d3.select(n[i]).attr("y") == 118 && d != null){
+          if(d["properties"]['value'] < 2000 || d["properties"]['value'] > 3000){
+            d3.select(this).style("opacity", opcaityOnClick)
+          }
+          //console.log(d["properties"]['value'])
+        } 
+        if(d3.select(n[i]).attr("y") == 143 && d != null){
+          if(d["properties"]['value'] < 3000 || d["properties"]['value'] > 4000){
+            d3.select(this).style("opacity", opcaityOnClick)
+          }
+          //console.log(d["properties"]['value'])
+        }
+        if(d3.select(n[i]).attr("y") == 167 && d != null){
+          if(d["properties"]['value'] < 4000 || d["properties"]['value'] > 5000){
+            d3.select(this).style("opacity", opcaityOnClick)
+          }
+          //console.log(d["properties"]['value'])
+        }
+        if(d3.select(n[i]).attr("y") == 191 && d != null){
+          if(d["properties"]['value'] < 5000 || d["properties"]['value'] > 6000){
+            d3.select(this).style("opacity", opcaityOnClick)
+          }
+          //console.log(d["properties"]['value'])
+        }
+        if(d3.select(n[i]).attr("y") == 215 && d != null){
+          if(d["properties"]['value'] < 6000 || d["properties"]['value'] > 7000){
+            d3.select(this).style("opacity", opcaityOnClick)
+          }
+          //console.log(d["properties"]['value'])
+        }
+        if(d3.select(n[i]).attr("y") == 239 && d != null){
+          if(d["properties"]['value'] < 7000 || d["properties"]['value'] > 8000){
+            d3.select(this).style("opacity", opcaityOnClick)
+          }
+          //console.log(d["properties"]['value'])
+        }
+        if(d3.select(n[i]).attr("y") == 264 && d != null){
+          if(d["properties"]['value'] < 10000){
+            d3.select(this).style("opacity", opcaityOnClick)
+          }
+          //console.log(d["properties"]['value'])
+        }
+        
+    });
+      //style("stroke", "#f00").style("opacity", .1)
+      //svg.selectAll('path[attr = "e: 0"]').remove()
+      // .transition()
+      // .duration(200)
+      // .style("opacity", 1)
+      d3.selectAll("rect")
+      //.remove()
+      .transition()
+      .duration(200)
+      .style("opacity", 1)
+      d3.select(this)
+      .transition()
+      .duration(200)
+      .style("opacity", .5)
+//         d3.selectAll("path").each(function(d,i) {
+//   console.log("The x position of the rect #" + i + " is " + d3.select(this).attr("e"))
+// })
+        // console.log()
+        // d3.selectAll("path")
+        })
+    .on('mouseout', function input() {
+      d3.selectAll("path")
+      .transition()
+      .duration(200)
+      .style("opacity", 1)
+      d3.select(this)
+      .transition()
+      .duration(200)
+      .style("opacity", 1)
+      d3.selectAll("rect")
+      .transition()
+      .duration(200)
+      .style("opacity", 1)
+      d3.select(this)
+      .transition()
+      .duration(200)
+      .style("opacity", 1)
+        });
+        
+
+
+      
+
+// // Bind the data to the SVG and create one path per GeoJSON feature
+// svg.selectAll("path")
+//       .data(json.features)
+//       .enter()
+//       .append("path")
+//       .attr("d", path)
+//       .style("stroke", "#000")
+//       .style("stroke-width", ".3")
+//       .style("fill", function(d) { return ramp(d.properties.value) })
+//       .on('mouseover', tip.show)
+//       .on('mouseout', tip.hide)
+
+
+
+/*legend title*/
+g.append("text")
+    .attr("font-family", "sans-serif")
+    .attr("x", -52)
+    .attr("y", 58)
+    .attr("fill", "#000")
+    .attr("text-anchor", "start")
+    .attr("font-size", "11px")
+    .attr("font-weight", "bold")
+    .text("Num Fires (CLICK)");
+
+/*Place the legend axis with the values in it*/
+    g.attr("transform", "translate(55, 0)")
+.call(d3.axisRight(yLegend)
+    .tickSize(0)
+    .tickFormat(function(y, i) { 
+      if(i>8) return "";
+      if(i==0) return "≤ " + 1000;
+      if(i==1) return "≤ " + 2000;
+      if(i==2) return "≤ " + 3000;
+      if(i==3) return "≤ " + 4000;
+      if(i==4) return "≤ " + 5000;
+      if(i==5) return "≤ " + 6000;
+      if(i==6) return "≤ " + 7000;
+      if(i==7) return "≤ " + 8000;
+      if(i==8) return "≥ "+ 10000;      
+      return y + "%"; })
+    .tickValues(color.domain()))
+  .select(".domain")
+    .remove()
+
 
   // Slider
 svg.append("input")
@@ -272,9 +502,35 @@ d3.csv(fileName, function(data) {
       .attr("d", path)
       .style("stroke", "#000")
       .style("stroke-width", ".3")
-      .style("fill", function(d) { return ramp(d.properties.value) })
+      .style("fill", function(d) { 
+        //return ramp(d.properties.value)
+        if(d.properties.value <= 1000) return color(1)
+        if(d.properties.value <= 2000 && d.properties.value > 1000) return color(2)
+        if(d.properties.value <= 3000 && d.properties.value > 2000) return color(3)
+        if(d.properties.value <= 4000 && d.properties.value > 3000) return color(4)
+        if(d.properties.value <= 5000 && d.properties.value > 4000) return color(5)
+        if(d.properties.value <= 6000 && d.properties.value > 5000) return color(6)
+        if(d.properties.value <= 7000 && d.properties.value > 6000) return color(7)
+        if(d.properties.value <= 8000 && d.properties.value > 7000) return color(8)
+        if(d.properties.value > 10000) return color(9)
+        return color(8)})//ramp(d.properties.value)
+      .attr("e", function(d) { 
+        if(d.properties.value <= 1000) return color(1)
+        if(d.properties.value <= 2000 && d.properties.value > 1000) return color(2)
+        if(d.properties.value <= 3000 && d.properties.value > 2000) return color(3)
+        if(d.properties.value <= 4000 && d.properties.value > 3000) return color(4)
+        if(d.properties.value <= 5000 && d.properties.value > 4000) return color(5)
+        if(d.properties.value <= 6000 && d.properties.value > 5000) return color(6)
+        if(d.properties.value <= 7000 && d.properties.value > 6000) return color(7)
+        if(d.properties.value <= 8000 && d.properties.value > 7000) return color(8)
+        if(d.properties.value > 10000) return color(9)
+        return  color(8)})//ramp(d.properties.value)
+      // .attr("class", function(d) { return ramp(d.properties.value)})
       .on('mouseover', tip.show)
       .on('mouseout', tip.hide)
+      .on('click', function(){
+        //return svg.selectAll("path").remove()
+      })
     // Exit
     svg.exit().remove();
 
@@ -283,12 +539,13 @@ d3.csv(fileName, function(data) {
 	// add a legend
 	var colorScale2 = d3.scaleSequential(d3.interpolateYlOrRd)
   		.domain([minVal, maxVal]);
-      continuous("#legend1", colorScale2);
+      //continuous("#legend1", colorScale2);
   });
 
 
-
 });
+
+
 }
 
 
@@ -399,7 +656,17 @@ d3.csv("./fires_each_state_by_year/1992_fires_each_state.csv", function(data) {
       .attr("d", path)
       .style("stroke", "#000")
       .style("stroke-width", ".3")
-      .style("fill", function(d) { return ramp(d.properties.value) })
+      .style("fill", function(d) { 
+        if(d.properties.value <= 1000) return color(1)
+        if(d.properties.value <= 2000 && d.properties.value > 1000) return color(2)
+        if(d.properties.value <= 3000 && d.properties.value > 2000) return color(3)
+        if(d.properties.value <= 4000 && d.properties.value > 3000) return color(4)
+        if(d.properties.value <= 5000 && d.properties.value > 4000) return color(5)
+        if(d.properties.value <= 6000 && d.properties.value > 5000) return color(6)
+        if(d.properties.value <= 7000 && d.properties.value > 6000) return color(7)
+        if(d.properties.value <= 8000 && d.properties.value > 7000) return color(8)
+        if(d.properties.value > 10000) return color(9)
+        return color(9)})//ramp(d.properties.value)
       .on('mouseover', tip.show)
       .on('mouseout', tip.hide)
     // Exit
@@ -410,7 +677,7 @@ d3.csv("./fires_each_state_by_year/1992_fires_each_state.csv", function(data) {
 	// add a legend
 	var colorScale2 = d3.scaleSequential(d3.interpolateYlOrRd)
   		.domain([minVal, maxVal]);
-      continuous("#legend1", colorScale2);
+      //continuous("#legend1", colorScale2);
   });
 
 });
