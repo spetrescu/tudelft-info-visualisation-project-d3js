@@ -36,6 +36,10 @@
       /* Font size set to 18px */
     }
 
+    .bar {
+      fill: #fc4e2a;
+    }
+
     main {
       top: 50px;
       bottom: 40px;
@@ -49,7 +53,7 @@
 
     input[type=range] {
       -webkit-appearance: none;
-      width: 250px;
+      width: 800px;
       height: 10px;
     }
 
@@ -155,21 +159,359 @@
 
 <body style="background-color:#cccccc" onload="load()">
   <h1>Wildfires in USA in <span id="nRadius-value">1992</span> for <select id="selectButton">ALL CAUSES</select></h1>
-  
-  <div id="legend1" style="display: inline-block" position="absolute"></div>
+  <!--   
+  <div id="legend1" style="display: inline-block" position="absolute"></div> -->
 
   <div style="position: absolute" style="top: 80px">
     <input type="range" min="1992" max="2015" id="nRadius" step="1" value="1992"> <b><span
         id="nRadius-value2">1992</span></b>
   </div>
+  <svg style="border:1px solid black" width="900" height="500" id="svgZ"></svg>
 
+  <svg style="border:1px solid black" style="background-position: bottom" width="960" height="500" id="svg3">
+    <foreignobject class="node" x="750" y="20" width="200" height="100">
+      <!-- <div style="border:1px green solid">I'm a div inside a SVG.</div>  -->
+      <select id="selectButtonStates"></select>
+    </foreignobject>
+    <foreignobject class="node" x="750" y="60" width="200" height="100">
+      <!-- <div style="border:1px green solid">I'm a div inside a SVG.</div>  -->
+      <select id="selectButtonYears"></select>
+    </foreignobject>
+  </svg>
 
 
   <script type="text/javascript">
+    console.log(d3.schemeYlOrRd[9])
+
+    // set the dimensions and margins of the horizontal bar graph
+    var margin_for_bar_chart = { top: 20, right: 50, bottom: 40, left: 90 },
+      width_for_bar_chart = 780 - margin_for_bar_chart.left - margin_for_bar_chart.right,
+      height_for_bar_chart = 500 - margin_for_bar_chart.top - margin_for_bar_chart.bottom;
+
+    function plotHorizontalBarChart(filename) {
+      d3.csv(filename, function (data) {
+        var dataArray = [];
+        var yearsArray = [];
+        for (var d = 0; d < data.length; d++) {
+          dataArray.push(parseFloat(data[d].NumOfFires))
+          yearsArray.push(parseFloat(data[d].Cause))
+          console.log(dataArray)
+          console.log(yearsArray)
+        }
+        var minVal_barChart = d3.min(dataArray)
+        maxVal_barChart = d3.max(dataArray)
+        //maxVal_barChart = 8
+        console.log(minVal_barChart)
+        console.log("IN FUNCTIE" + maxVal_barChart)
+
+        // set the ranges
+        var y_barChart = d3.scaleBand()
+          .range([height_for_bar_chart, 0])
+          .padding(0.1);
+
+        var x_barChart = d3.scaleLinear()
+          .range([0, width_for_bar_chart]);
+
+        var svg3 = d3.select("#svg3").append("svg")
+          .attr("width", width_for_bar_chart + margin_for_bar_chart.left + margin_for_bar_chart.right)
+          .attr("height", height_for_bar_chart + margin_for_bar_chart.top + margin_for_bar_chart.bottom)
+          .append("g")
+          .attr("transform",
+            "translate(" + margin_for_bar_chart.left + "," + margin_for_bar_chart.top + ")");
+
+        var buttonNames = ["All states", "button 2", "button 3", "button 4"];
+
+        var statesBarChart = ["All states"]//, "Alabama", "Wyoming"]
+        var yearsBarChart = 
+        ["All years",
+         "2015", "2014", "2015", "2014", 
+         "2013", "2012", "2011", "2010", 
+         "1999", "1998", "1997", "1996", 
+         "1995", "1994", "1993", "1992"]
+        // add the options to the button
+        d3.select("#selectButtonStates")
+          .selectAll('myOptions')
+          .data(statesBarChart)
+          .enter()
+          .append('option')
+          .text(function (d) { return d; }) // text showed in the menu
+          .attr("value", function (d) { return d; }) // corresponding value returned by the button
+          .attr("height", 60)
+        d3.select("#selectButtonYears")
+          .selectAll('myOptions')
+          .data(yearsBarChart)
+          .enter()
+          .append('option')
+          .text(function (d) { return d; }) // text showed in the menu
+          .attr("value", function (d) { return d; }) // corresponding value returned by the button
+          .attr("height", 60)
+
+        x_barChart.domain([0, maxVal_barChart])
+        y_barChart.domain(data.map(function (d) { return d.Cause; }));
+        //y.domain([0, d3.max(data, function(d) { return d.sales; })]);
+
+        // append the rectangles for the bar chart
+        var bars = svg3.selectAll(".bar")
+          .data(data)
+          .enter().append("rect")
+          .attr("class", "bar")
+          //.attr("x", function(d) { return x(d.sales); })
+          .attr("width", function (d) { return x_barChart(d.NumOfFires); })
+          .attr("y", function (d) { return y_barChart(d.Cause); })
+          .attr("height", y_barChart.bandwidth())
+          //.attr("e", function (d) {})
+          .attr("efz", function (d) { return d.NumOfFires; })
+
+        // add the x Axis
+        var xAxis = svg3.append("g")
+          //.transition().duration(250)
+          .attr("transform", "translate(0," + height_for_bar_chart + ")")
+          .call(d3.axisBottom(x_barChart));
+
+        // Remove old ones
+        // bars.exit(selectAll("text", xAxis.selectAll("text").remove()))
+
+
+
+        // add the y Axis
+        svg3.append("g")
+          .call(d3.axisLeft(y_barChart));
+
+
+        //x axis title        
+        svg3.append("text")
+          .attr("x", height_for_bar_chart - margin_for_bar_chart.left)
+          .attr("y", height_for_bar_chart + 32)
+          .attr("text-anchor", "middle")
+          .attr("font-family", "sans-serif")
+          .attr("font-size", "14px")
+          .attr("font-weight", "bold")
+          .attr("fill", "black")
+          .text("Num of fires");
+
+        //y axis title        
+        svg3.append("text")
+          .attr("x", (-height_for_bar_chart / 2 - 10))
+          .attr("transform", "rotate(-90)")
+          .attr("y", -60)
+          .attr("text-anchor", "middle")
+          .attr("font-family", "sans-serif")
+          .attr("font-size", "14px")
+          .attr("font-weight", "bold")
+          .attr("fill", "black")
+          .text("Causes");
+
+        /////borrowed code from below
+        svg3.selectAll('rect')
+          .on('mouseover', function input() {
+            d3.select(this)
+              .style("opacity", 1)
+              .style("fill", "#800026");
+
+            //add tooltip for exact data
+
+            leftMargin = width_for_bar_chart * 0.005
+
+            //set up data to show on mouseover
+            var xPosition = (parseFloat(d3.select(this).attr("width")) + leftMargin);
+            console.log("leftMargin is " + leftMargin)
+            var yPosition = parseFloat(d3.select(this).attr("y")) + (parseFloat(d3.select(this).attr("height")) / 2);
+
+            svg3.append("text")
+              .attr("id", "tooltip")
+              .attr("x", xPosition)
+              .attr("y", yPosition)
+              .attr("dy", "0.35em")
+              .attr("text-anchor", "start")
+              .attr("font-family", "sans-serif")
+              .attr("font-size", "12px")
+              .attr("font-weight", "bold")
+              .attr("fill", "black")
+              .text(d3.select(this).attr("efz"));
+          })
+          .on('mouseout', function input() {
+            d3.select(this)
+              .style("opacity", 1)
+              .style("fill", "#fc4e2a");
+            d3.select("#tooltip").remove();
+          });
+      });
+      ///end of horizontal bar chart
+    }
+
+
+
+    //create new horizontal bar chart
+    function plotNewHorizontalBarChart(filename) {
+      console.log("filename = " + filename)
+
+      d3.select("#svg3").selectAll("g").remove()
+
+      d3.csv(filename, function (data) {
+
+        var numberFiresArray = [];
+        var causeArray = [];
+
+        for (var d = 0; d < data.length; d++) {
+          numberFiresArray.push(parseFloat(data[d].NumOfFires))
+          causeArray.push(data[d].Cause)
+          //console.log(data[d].Cause)
+        }
+        var minVal_barChart = d3.min(numberFiresArray)
+        maxVal_barChart = d3.max(numberFiresArray)
+        console.log("minVal_barChart = " + minVal_barChart)
+        console.log("maxVal_barChart = " + maxVal_barChart)
+        console.log(numberFiresArray)
+        console.log(causeArray)
+
+        // set the ranges
+        var y_barChart = d3.scaleBand()
+          .range([height_for_bar_chart, 0])
+          .padding(0.1);
+
+        var x_barChart = d3.scaleLinear()
+          .range([0, width_for_bar_chart]);
+
+        var svg3 = d3.select("#svg3").append("svg")
+          .attr("width", width_for_bar_chart + margin_for_bar_chart.left + margin_for_bar_chart.right)
+          .attr("height", height_for_bar_chart + margin_for_bar_chart.top + margin_for_bar_chart.bottom)
+          .append("g")
+          .attr("transform",
+            "translate(" + margin_for_bar_chart.left + "," + margin_for_bar_chart.top + ")");
+
+
+        x_barChart.domain([0, maxVal_barChart])
+        y_barChart.domain(data.map(function (d) { return d.Cause; }));
+        //y.domain([0, d3.max(data, function(d) { return d.sales; })]);
+
+        // append the rectangles for the bar chart
+        var bars = svg3.selectAll(".bar")
+          .data(data)
+          .enter().append("rect")
+          .attr("class", "bar")
+          //.attr("x", function(d) { return x(d.sales); })
+          .attr("width", function (d) { return x_barChart(d.NumOfFires); })
+          .attr("y", function (d) { return y_barChart(d.Cause); })
+          .attr("height", y_barChart.bandwidth())
+          //.attr("e", function (d) {})
+          .attr("efzjjjj", function (d) { return d.NumOfFires; })
+          .attr("fill", "black")
+
+        // add the x Axis
+        var xAxis = svg3.append("g")
+          .transition().duration(250)
+          .attr("transform", "translate(0," + height_for_bar_chart + ")")
+          .call(d3.axisBottom(x_barChart));
+
+        // add the y Axis
+        svg3.append("g")
+          .transition().duration(250)
+          .call(d3.axisLeft(y_barChart));
+
+        //x axis title        
+        svg3.append("text")
+          .attr("x", height_for_bar_chart - margin_for_bar_chart.left)
+          .attr("y", height_for_bar_chart + 32)
+          .attr("text-anchor", "middle")
+          .attr("font-family", "sans-serif")
+          .attr("font-size", "14px")
+          .attr("font-weight", "bold")
+          .attr("fill", "black")
+          .text("Num of fires");
+
+        //y axis title        
+        svg3.append("text")
+          .attr("x", (-height_for_bar_chart / 2 - 10))
+          .attr("transform", "rotate(-90)")
+          .attr("y", -60)
+          .attr("text-anchor", "middle")
+          .attr("font-family", "sans-serif")
+          .attr("font-size", "14px")
+          .attr("font-weight", "bold")
+          .attr("fill", "black")
+          .text("Causes");
+
+        /////borrowed code from below
+        svg3.selectAll('rect')
+          .on('mouseover', function input() {
+            d3.select(this)
+              .style("opacity", 1)
+              .style("fill", "#800026");
+
+            //add tooltip for exact data
+
+            leftMargin = width_for_bar_chart * 0.005
+
+            //set up data to show on mouseover
+            var xPosition = (parseFloat(d3.select(this).attr("width")) + leftMargin);
+            console.log("leftMargin is " + leftMargin)
+            var yPosition = parseFloat(d3.select(this).attr("y")) + (parseFloat(d3.select(this).attr("height")) / 2);
+
+            svg3.append("text")
+              .attr("id", "tooltip")
+              .attr("x", xPosition)
+              .attr("y", yPosition)
+              .attr("dy", "0.35em")
+              .attr("text-anchor", "start")
+              .attr("font-family", "sans-serif")
+              .attr("font-size", "12px")
+              .attr("font-weight", "bold")
+              .attr("fill", "black")
+              .text(d3.select(this).attr("efzjjjj"));
+          })
+          .on('mouseout', function input() {
+            d3.select(this)
+              .style("opacity", 1)
+              .style("fill", "#fc4e2a");
+            d3.select("#tooltip").remove();
+          });
+
+
+      });
+    }
+
+
+
+
+    //create intial horizontal bar chart
+    initial_filename_horizontal_bar_chart = "./horizontal_graph/all_states_all_years_fires_causes.csv"
+    plotHorizontalBarChart(initial_filename_horizontal_bar_chart);
+
+    function updateHorizontalBarChart(selectedOptionState, selectedOptionYear) {
+      console.log("Now we will update bar chart ... ")
+      if (selectedOptionState == "All states" && selectedOptionYear == "All years") {
+        filename = "./horizontal_graph/all_states_all_years_fires_causes.csv"
+        //svg.selectAll("#legend1").remove();
+        //d3.selectAll('g').remove();
+        plotNewHorizontalBarChart(filename);
+      }else if (selectedOptionState == "All states") {
+        filename = "./horizontal_graph/all_states/causes_" + selectedOptionYear + "_fires_each_state.csv"
+        //svg.selectAll("#legend1").remove();
+        //d3.selectAll('g').remove();
+        plotNewHorizontalBarChart(filename);
+      }if(selectedOptionYear == "All states") {
+
+      }
+
+    }
+    //listen to change on selectButtonStates menu
+    d3.select("#selectButtonStates").on("change", function () {
+      var selectedOptionState = d3.select(this).property("value")
+      var selectedOptionYear = d3.select("#selectButtonYears").property("value")
+      updateHorizontalBarChart(selectedOptionState, selectedOptionYear)
+    });
+
+    //listen to change on selectButtonStates menu
+    d3.select("#selectButtonYears").on("change", function () {
+      var selectedOptionYear = d3.select(this).property("value")
+      var selectedOptionState = d3.select("#selectButtonStates").property("value")
+      updateHorizontalBarChart(selectedOptionState, selectedOptionYear)
+    });
+
 
     //select menu for causes
     // List of groups (here I have one group per column)
-    var allGroup = ["All causes", "Arson", "Campfires", "Smoking"]
+    var allGroup = ["All causes", "Arson"]//, "Campfires", "Smoking"]
     d3.select("#selectButton")
       .selectAll('myOptions')
       .data(allGroup)
@@ -182,7 +524,7 @@
     d3.select("#selectButton").on("change", function () {
       var selectedOption = d3.select(this).property("value")
       // run the updateChart function with this selected option
-      
+
       //update(selectedOption)
       // adjust the text on the range slider
       //
@@ -229,7 +571,7 @@
       .projection(projection); // tell path generator to use albersUsa projection
 
     //Create SVG element and append map to the SVG
-    var svg = d3.select("body")
+    var svg = d3.select("#svgZ")
       .append("svg")
       .attr("width", width)
       .attr("height", height);
@@ -322,11 +664,11 @@
             //.remove()
             .transition()
             .duration(200)
-            .style("opacity", .7)
+            .style("opacity", 1)
           d3.select(this)
             .transition()
             .duration(200)
-            .style("opacity", 1)
+            .style("opacity", .5)
         })
         .on('click', function (dis, i, n) {
           d3.selectAll("path").each(function (d) {
@@ -388,7 +730,7 @@
               //console.log(d["properties"]['value'])
             }
             if (d3.select(n[i]).attr("y") == 264 && d != null) {
-              if (d["properties"]['value'] < 10000) {
+              if (d["properties"]['value'] < 8000) {
                 d3.select(this).style("opacity", opcaityOnClick)
               }
               //console.log(d["properties"]['value'])
@@ -448,7 +790,7 @@
 
       /*Place the legend axis with the values in it*/
       g.append("g")
-      .attr("transform", "translate(0, 0)")
+        .attr("transform", "translate(0, 0)")
         .call(d3.axisRight(yLegend)
           .tickSize(0)
           .tickFormat(function (y, i) {
@@ -461,7 +803,7 @@
             if (i == 5) return "≤ " + 6000;
             if (i == 6) return "≤ " + 7000;
             if (i == 7) return "≤ " + 8000;
-            if (i == 8) return "≥ " + 10000;
+            if (i == 8) return "> " + 8000;
             return y + "%";
           })
           .tickValues(color.domain()))
@@ -529,7 +871,7 @@
               if (d.properties.value <= 6000 && d.properties.value > 5000) return color(6)
               if (d.properties.value <= 7000 && d.properties.value > 6000) return color(7)
               if (d.properties.value <= 8000 && d.properties.value > 7000) return color(8)
-              if (d.properties.value > 10000) return color(9)
+              if (d.properties.value > 8000) return color(9)
               return color(8)
             })//ramp(d.properties.value)
             .attr("e", function (d) {
@@ -541,7 +883,7 @@
               if (d.properties.value <= 6000 && d.properties.value > 5000) return color(6)
               if (d.properties.value <= 7000 && d.properties.value > 6000) return color(7)
               if (d.properties.value <= 8000 && d.properties.value > 7000) return color(8)
-              if (d.properties.value > 10000) return color(9)
+              if (d.properties.value > 8000) return color(9)
               return color(8)
             })//ramp(d.properties.value)
             // .attr("class", function(d) { return ramp(d.properties.value)})
@@ -590,11 +932,11 @@
             //.remove()
             .transition()
             .duration(200)
-            .style("opacity", .7)
+            .style("opacity", 1)
           d3.select(this)
             .transition()
             .duration(200)
-            .style("opacity", 1)
+            .style("opacity", .5)
         })
         .on('click', function (dis, i, n) {
           d3.selectAll("path").each(function (d) {
@@ -716,7 +1058,7 @@
 
       /*Place the legend axis with the values in it*/
       g.append("g")
-      .attr("transform", "translate(0, 0)")
+        .attr("transform", "translate(0, 0)")
         .call(d3.axisRight(yLegend)
           .tickSize(0)
           .tickFormat(function (y, i) {
@@ -736,17 +1078,17 @@
         .select(".domain")
         .remove()
 
-        // if (d.properties.value <= 100) return color(1)
-        //       if (d.properties.value <= 200 && d.properties.value > 100) return color(2)
-        //       if (d.properties.value <= 300 && d.properties.value > 200) return color(3)
-        //       if (d.properties.value <= 400 && d.properties.value > 300) return color(4)
-        //       if (d.properties.value <= 800 && d.properties.value > 400) return color(5)
-        //       if (d.properties.value <= 1000 && d.properties.value > 800) return color(6)
-        //       if (d.properties.value <= 1200 && d.properties.value > 1000) return color(7)
-        //       if (d.properties.value <= 1300 && d.properties.value > 1200) return color(8)
-        //       if (d.properties.value > 1300) return color(9)
-        //       return color(8)
-        
+      // if (d.properties.value <= 100) return color(1)
+      //       if (d.properties.value <= 200 && d.properties.value > 100) return color(2)
+      //       if (d.properties.value <= 300 && d.properties.value > 200) return color(3)
+      //       if (d.properties.value <= 400 && d.properties.value > 300) return color(4)
+      //       if (d.properties.value <= 800 && d.properties.value > 400) return color(5)
+      //       if (d.properties.value <= 1000 && d.properties.value > 800) return color(6)
+      //       if (d.properties.value <= 1200 && d.properties.value > 1000) return color(7)
+      //       if (d.properties.value <= 1300 && d.properties.value > 1200) return color(8)
+      //       if (d.properties.value > 1300) return color(9)
+      //       return color(8)
+
 
       // Load in my states data!
       fileName = "./arson_causes_fires_each_state_by_year/arson_" + fileNumber + "_fires_each_state.csv"
@@ -957,11 +1299,11 @@
             //.remove()
             .transition()
             .duration(200)
-            .style("opacity", .7)
+            .style("opacity", 1)
           d3.select(this)
             .transition()
             .duration(200)
-            .style("opacity", 1)
+            .style("opacity", .5)
         })
         .on('click', function (dis, i, n) {
           d3.selectAll("path").each(function (d) {
@@ -1023,7 +1365,7 @@
               //console.log(d["properties"]['value'])
             }
             if (d3.select(n[i]).attr("y") == 264 && d != null) {
-              if (d["properties"]['value'] < 10000) {
+              if (d["properties"]['value'] < 8000) {
                 d3.select(this).style("opacity", opcaityOnClick)
               }
               //console.log(d["properties"]['value'])
@@ -1095,7 +1437,7 @@
             if (i == 5) return "≤ " + 6000;
             if (i == 6) return "≤ " + 7000;
             if (i == 7) return "≤ " + 8000;
-            if (i == 8) return "≥ " + 10000;
+            if (i == 8) return "> " + 8000;
             return y + "%";
           })
           .tickValues(color.domain()))
@@ -1156,7 +1498,7 @@
               if (d.properties.value <= 6000 && d.properties.value > 5000) return color(6)
               if (d.properties.value <= 7000 && d.properties.value > 6000) return color(7)
               if (d.properties.value <= 8000 && d.properties.value > 7000) return color(8)
-              if (d.properties.value > 10000) return color(9)
+              if (d.properties.value > 8000) return color(9)
               return color(9)
             })//ramp(d.properties.value)
             .on('mouseover', tip.show)
