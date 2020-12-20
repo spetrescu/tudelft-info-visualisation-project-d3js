@@ -183,6 +183,18 @@
   <script type="text/javascript">
     console.log(d3.schemeYlOrRd[9])
 
+    function getStateAbbreviation(stateName){
+      
+      console.log("SJJJJJJJJJJJ")
+      states = ["Alabama","Alaska","Arkansas","Arizona","California","Colorado","Connecticut","Delaware","District of Columbia","Florida","Georgia","Hawaii","Iowa","Idaho","Illinois","Indiana","Kansas","Kentucky","Louisiana","Maine","Maryland","Massachusetts","Michigan","Minnesota","Missouri","Mississippi","Montana","North Carolina","North Dakota","Nebraska","New Hampshire","New Jersey","New Mexico","Nevada","New York","Ohio","Oklahoma","Oregon","Pennsylvania","Rhode Island","South Carolina","South Dakota","Tennessee","Texas","Utah","Virginia","Vermont","Washington","Wisconsin","West Virginia","Wyoming", "All states"]
+      statesAbbreviated = ["AL", "AK", "AZ","AR",     "CA",     "CO",     "CT",     "DC",     "DE",     "FL",     "GA",     "HI",     "ID",     "IL",     "IN",     "IA",     "KS",     "KY",     "LA",     "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ",         "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"]
+      //console.log(stateName)
+      //console.log(states.indexOf(stateName))
+      if(stateName == "All states")
+        return states[states.length-1]
+      return statesAbbreviated[states.indexOf(stateName)];
+    }
+
     // set the dimensions and margins of the horizontal bar graph
     var margin_for_bar_chart = { top: 20, right: 50, bottom: 40, left: 90 },
       width_for_bar_chart = 780 - margin_for_bar_chart.left - margin_for_bar_chart.right,
@@ -221,13 +233,16 @@
 
         var buttonNames = ["All states", "button 2", "button 3", "button 4"];
 
-        var statesBarChart = ["All states"]//, "Alabama", "Wyoming"]
-        var yearsBarChart = 
-        ["All years",
-         "2015", "2014", "2015", "2014", 
-         "2013", "2012", "2011", "2010", 
-         "1999", "1998", "1997", "1996", 
-         "1995", "1994", "1993", "1992"]
+        var statesBarChart = ["All states", "Alabama","Alaska","Arkansas","Arizona","California","Colorado","Connecticut","Delaware","District of Columbia","Florida","Georgia","Hawaii","Iowa","Idaho","Illinois","Indiana","Kansas","Kentucky","Louisiana","Maine","Maryland","Massachusetts","Michigan","Minnesota","Missouri","Mississippi","Montana","North Carolina","North Dakota","Nebraska","New Hampshire","New Jersey","New Mexico","Nevada","New York","Ohio","Oklahoma","Oregon","Pennsylvania","Rhode Island","South Carolina","South Dakota","Tennessee","Texas","Utah","Virginia","Vermont","Washington","Wisconsin","West Virginia","Wyoming"]
+        var yearsBarChart =
+          ["All years",
+            "2015", "2014",
+            "2013", "2012", "2011", "2010",
+            "2009", "2008", "2007", "2006",
+            "2005", "2004", "2003", "2002", 
+            "2001", "1999", "1998", "1997", 
+            "1996", "1995", "1994", "1993", 
+            "1992"]
         // add the options to the button
         d3.select("#selectButtonStates")
           .selectAll('myOptions')
@@ -300,6 +315,18 @@
           .attr("font-weight", "bold")
           .attr("fill", "black")
           .text("Causes");
+
+        //title        
+        svg3.append("text")
+          .attr("x", height_for_bar_chart - margin_for_bar_chart.left)
+          .attr("y", 32)
+          .attr("text-anchor", "middle")
+          .attr("font-family", "sans-serif")
+          .attr("font-size", "20px")
+          .attr("font-weight", "bold")
+          .attr("fill", "black")
+          .text("Number of fires by specific Causes");
+
 
         /////borrowed code from below
         svg3.selectAll('rect')
@@ -431,6 +458,18 @@
           .attr("fill", "black")
           .text("Causes");
 
+        //title        
+        svg3.append("text")
+          .attr("x", height_for_bar_chart - margin_for_bar_chart.left)
+          .attr("y", 32)
+          .attr("text-anchor", "middle")
+          .attr("font-family", "sans-serif")
+          .attr("font-size", "20px")
+          .attr("font-weight", "bold")
+          .attr("fill", "black")
+          .text("Number of fires by specific Causes");
+
+
         /////borrowed code from below
         svg3.selectAll('rect')
           .on('mouseover', function input() {
@@ -468,6 +507,7 @@
 
 
       });
+      // console.log("A IESIT")
     }
 
 
@@ -479,33 +519,57 @@
 
     function updateHorizontalBarChart(selectedOptionState, selectedOptionYear) {
       console.log("Now we will update bar chart ... ")
-      if (selectedOptionState == "All states" && selectedOptionYear == "All years") {
+      if(selectedOptionState == "All states" && selectedOptionYear == "All years") {
         filename = "./horizontal_graph/all_states_all_years_fires_causes.csv"
         //svg.selectAll("#legend1").remove();
         //d3.selectAll('g').remove();
         plotNewHorizontalBarChart(filename);
-      }else if (selectedOptionState == "All states") {
+      } else if(selectedOptionState == "All states"&& selectedOptionYear != "All years") {
         filename = "./horizontal_graph/all_states/causes_" + selectedOptionYear + "_fires_each_state.csv"
         //svg.selectAll("#legend1").remove();
         //d3.selectAll('g').remove();
+        console.log("A MIA OARA" + selectedOptionYear)
         plotNewHorizontalBarChart(filename);
-      }if(selectedOptionYear == "All states") {
+      } else if (selectedOptionYear != "All states" && selectedOptionYear != "All years") {
+        console.log("ZZzzzzzselectedOptionState" + selectedOptionState)
+        console.log("ZZZZSSSelectedOptionYear" + selectedOptionYear)
 
+        //after gathered all years data
+        //filename = "./causes/" + selectedOptionYear +"_causes_each_state/causes_" + selectedOptionYear + "_" + selectedOptionState + "_fires_each_state.csv"
+
+        filename = "./causes/"+ selectedOptionYear + "_causes_each_state/causes_" + selectedOptionYear + "_" + selectedOptionState + "_fires_each_state.csv"
+        console.log("filename" + filename)
+        //filename = "./horizontal_graph/all_states/causes_" + selectedOptionYear + "_fires_each_state.csv"
+        //svg.selectAll("#legend1").remove();
+        //d3.selectAll('g').remove();
+        plotNewHorizontalBarChart(filename);
+      }else if(selectedOptionState != "All states"&& selectedOptionYear == "All years") {
+        filename = "./causes_all_years/"+"causes_all_years_" + selectedOptionState + "_fires_each_state.csv"
+        //svg.selectAll("#legend1").remove();
+        //d3.selectAll('g').remove();
+        console.log("A MIA OARA" + selectedOptionYear)
+        plotNewHorizontalBarChart(filename);
       }
 
     }
     //listen to change on selectButtonStates menu
     d3.select("#selectButtonStates").on("change", function () {
       var selectedOptionState = d3.select(this).property("value")
+      
+      var abbreviatedStatename = getStateAbbreviation(selectedOptionState)
       var selectedOptionYear = d3.select("#selectButtonYears").property("value")
-      updateHorizontalBarChart(selectedOptionState, selectedOptionYear)
+      updateHorizontalBarChart(abbreviatedStatename, selectedOptionYear)
     });
+
+
 
     //listen to change on selectButtonStates menu
     d3.select("#selectButtonYears").on("change", function () {
       var selectedOptionYear = d3.select(this).property("value")
       var selectedOptionState = d3.select("#selectButtonStates").property("value")
-      updateHorizontalBarChart(selectedOptionState, selectedOptionYear)
+      console.log("SMmMmmmmm"+selectedOptionState)
+      var abbreviatedStatename = getStateAbbreviation(selectedOptionState)
+      updateHorizontalBarChart(abbreviatedStatename, selectedOptionYear)
     });
 
 
@@ -858,6 +922,7 @@
             .data(json.features)
             .enter()
             .append("path")
+            .attr("pathState", function (d) { return d.properties.name; })
             .attr("d", path)
             .style("stroke", "#000")
             .style("stroke-width", ".3")
@@ -889,9 +954,30 @@
             // .attr("class", function(d) { return ramp(d.properties.value)})
             .on('mouseover', tip.show)
             .on('mouseout', tip.hide)
-            .on('click', function () {
-              //return svg.selectAll("path").remove()
-            })
+            .on('click', function (dis, i, n) {
+
+              
+              //state name 
+              stateName = (d3.select(n[i]).attr("pathState"))
+              console.log(stateName)
+
+              //year to display data
+              year = d3.select("#nRadius").property("value")
+
+              //update selectors values
+              d3.select('#selectButtonStates').property('value', stateName);
+              d3.select('#selectButtonYears').property('value', year);
+
+              //console.log("State name initial = " + getStateAbbreviation(stateName))
+
+              //display data about selected state & year on horizontal bar chart
+              updateHorizontalBarChart(getStateAbbreviation(stateName), year)
+
+              // console.log(+d3.select("#nRadius").value)
+              // console.log(d3.select("#nRadius").property("value"))
+              // console.log(d3.select("#selectButton").property("value"))
+
+            });
           // Exit
           svg.exit().remove();
 
@@ -1487,6 +1573,7 @@
             .enter()
             .append("path")
             .attr("d", path)
+            .attr("pathState", function (d) { return d.properties.name; })
             .style("stroke", "#000")
             .style("stroke-width", ".3")
             .style("fill", function (d) {
@@ -1503,6 +1590,28 @@
             })//ramp(d.properties.value)
             .on('mouseover', tip.show)
             .on('mouseout', tip.hide)
+            .on('click', function (dis, i, n) {
+
+              //state name 
+              stateName = (d3.select(n[i]).attr("pathState"))
+              console.log(stateName)
+
+              //year to display data
+              year = d3.select("#nRadius").property("value")
+
+              //update selectors values
+              d3.select('#selectButtonStates').property('value', stateName);
+              d3.select('#selectButtonYears').property('value', year);
+              //console.log("State name initial = " + getStateAbbreviation(stateName))
+
+              //display data about selected state & year on horizontal bar chart
+              updateHorizontalBarChart(getStateAbbreviation(stateName), year)
+
+              // console.log(+d3.select("#nRadius").value)
+              // console.log(d3.select("#nRadius").property("value"))
+              // console.log(d3.select("#selectButton").property("value"))
+
+            });
           // Exit
           svg.exit().remove();
 
@@ -1516,6 +1625,26 @@
 
       });
     }
+
+    // .on('click', function (dis, i, n) {
+    //   d3.selectAll("path").each(function (d) {
+    //     //var a = d["properties"]['value']
+    //     //console.log(d3.select(n[i]).attr("col"))
+    //     var opcaityOnClick = 0.3
+    //     if (d == null) {
+    //       console.log("NK")
+    //       console.log(" is = " + d3.select(n[i]).attr("y"))
+    //     } else if (d["properties"]['value'] > 10000) {
+    //       //d3.select(this).style("opacity", .5)
+    //     }
+    //     if (d3.select(n[i]).attr("y") == 70 && d != null) {
+    //       if (d["properties"]['value'] > 1000) {
+    //         d3.select(this).style("opacity", opcaityOnClick)
+    //       }
+    //       //console.log(d["properties"]['value'])
+    //     }
+
+    //   });
 
     initialMap();
   </script>
