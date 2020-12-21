@@ -59,7 +59,7 @@
 
     input[type=range]::-webkit-slider-runnable-track {
       width: 800px;
-      height: 7px;
+      height: 5px;
       background: #ddd;
       border: none;
       border-radius: 3px;
@@ -68,11 +68,12 @@
     input[type=range]::-webkit-slider-thumb {
       -webkit-appearance: none;
       border: none;
-      height: 20px;
-      width: 20px;
+      height: 15px;
+      width: 25px;
       border-radius: 20%;
       background: rgb(255, 183, 1);
-      margin-top: -6px;
+      margin-top: -3px;
+      margin-left: 3px;
     }
 
     input[type=range]:focus {
@@ -168,14 +169,21 @@
   </div>
   <svg style="border:1px solid black" width="900" height="500" id="svgZ"></svg>
 
-  <svg style="border:1px solid black" style="background-position: bottom" width="960" height="500" id="svg3">
-    <foreignobject class="node" x="750" y="20" width="200" height="100">
+  <svg style="border:1px solid black" style="background-position: bottom" width="900" height="500" id="svg3">
+    <foreignobject class="node" x="730" y="20" width="200" height="100">
       <!-- <div style="border:1px green solid">I'm a div inside a SVG.</div>  -->
       <select id="selectButtonStates"></select>
     </foreignobject>
-    <foreignobject class="node" x="750" y="60" width="200" height="100">
+    <foreignobject class="node" x="730" y="60" width="200" height="100">
       <!-- <div style="border:1px green solid">I'm a div inside a SVG.</div>  -->
       <select id="selectButtonYears"></select>
+    </foreignobject>
+  </svg>
+
+  <svg style="border:1px solid black" style="background-position: bottom" width="900" height="500" id="svgLineChart">
+    <foreignobject class="node" x="730" y="20" width="200" height="100">
+      <!-- <div style="border:1px green solid">I'm a div inside a SVG.</div>  -->
+      <select id="selectStateForLineChart"></select>
     </foreignobject>
   </svg>
 
@@ -196,7 +204,7 @@
     }
 
     // set the dimensions and margins of the horizontal bar graph
-    var margin_for_bar_chart = { top: 20, right: 50, bottom: 40, left: 90 },
+    var margin_for_bar_chart = { top: 60, right: 50, bottom: 40, left: 90 },
       width_for_bar_chart = 780 - margin_for_bar_chart.left - margin_for_bar_chart.right,
       height_for_bar_chart = 500 - margin_for_bar_chart.top - margin_for_bar_chart.bottom;
 
@@ -302,11 +310,11 @@
           .attr("font-size", "14px")
           .attr("font-weight", "bold")
           .attr("fill", "black")
-          .text("Num of fires");
+          .text("Number of fires");
 
         //y axis title        
         svg3.append("text")
-          .attr("x", (-height_for_bar_chart / 2 - 10))
+          .attr("x", (-height_for_bar_chart / 2))
           .attr("transform", "rotate(-90)")
           .attr("y", -60)
           .attr("text-anchor", "middle")
@@ -319,13 +327,13 @@
         //title        
         svg3.append("text")
           .attr("x", height_for_bar_chart - margin_for_bar_chart.left)
-          .attr("y", 32)
+          .attr("y", -10)
           .attr("text-anchor", "middle")
           .attr("font-family", "sans-serif")
           .attr("font-size", "20px")
           .attr("font-weight", "bold")
           .attr("fill", "black")
-          .text("Number of fires by specific Causes");
+          .text("Number of fires by specific causes");
 
 
         /////borrowed code from below
@@ -444,7 +452,7 @@
           .attr("font-size", "14px")
           .attr("font-weight", "bold")
           .attr("fill", "black")
-          .text("Num of fires");
+          .text("Number of fires");
 
         //y axis title        
         svg3.append("text")
@@ -467,7 +475,7 @@
           .attr("font-size", "20px")
           .attr("font-weight", "bold")
           .attr("fill", "black")
-          .text("Number of fires by specific Causes");
+          .text("Number of fires by specific causes");
 
 
         /////borrowed code from below
@@ -510,6 +518,214 @@
       // console.log("A IESIT")
     }
 
+
+    ///////line chart
+
+    // set the dimensions and margins of the horizontal bar graph
+    var margin_for_line_chart = { top: 60, right: 50, bottom: 40, left: 90 },
+      width_for_line_chart = 780 - margin_for_line_chart.left - margin_for_line_chart.right,
+      height_for_line_chart = 500 - margin_for_line_chart.top - margin_for_line_chart.bottom;
+
+    function plotLineChart() {
+      //selectStateForLineChart
+      var svgLineChart = d3.select("#svgLineChart")
+        .append("svg")
+        .attr("width", width_for_line_chart + margin_for_line_chart.left + margin_for_line_chart.right)
+        .attr("height", height_for_line_chart + margin_for_line_chart.top + margin_for_line_chart.bottom)
+        .append("g")
+        .attr("transform",
+          "translate(" + margin_for_line_chart.left + "," + margin_for_line_chart.top + ")");
+
+
+        var statesBarChart = ["Alabama", "Alaska", "Arkansas", "Arizona", "California", "Colorado", "Connecticut", "Delaware", "District of Columbia", "Florida", "Georgia", "Hawaii", "Iowa", "Idaho", "Illinois", "Indiana", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", "Missouri", "Mississippi", "Montana", "North Carolina", "North Dakota", "Nebraska", "New Hampshire", "New Jersey", "New Mexico", "Nevada", "New York", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Virginia", "Vermont", "Washington", "Wisconsin", "West Virginia", "Wyoming"]
+        // add the options to the button
+        d3.select("#selectStateForLineChart")
+          .selectAll('myOptions')
+          .data(statesBarChart)
+          .enter()
+          .append('option')
+          .text(function (d) { return d; }) // text showed in the menu
+          .attr("value", function (d) { return d; }) // corresponding value returned by the button
+      
+      //Read the data
+      d3.csv("./line_graph_data/dataForLineGraph.csv",
+
+        // When reading the csv, I must format variables:
+        function (d) {
+          return { date: d3.timeParse("%Y-%m-%d")(d.date), value: d.value }
+        },
+
+        // Now I can use this dataset:
+        function (data) {
+
+          // Add X axis --> it is a date format
+          var x = d3.scaleTime()
+            .domain(d3.extent(data, function (d) { return d.date; }))
+            .range([0, width_for_line_chart]);
+          svgLineChart.append("g")
+            .attr("transform", "translate(0," + height_for_line_chart + ")")
+            .call(d3.axisBottom(x));
+
+          // Add Y axis
+          var y = d3.scaleLinear()
+            .domain([0, d3.max(data, function (d) { return +d.value; })])
+            .range([height_for_line_chart, 0]);
+          svgLineChart.append("g")
+            .call(d3.axisLeft(y));
+
+          // Add the line
+          svgLineChart.append("path")
+            .datum(data)
+            .attr("fill", "none")
+            .attr("stroke", "#e31a1c")
+            .attr("stroke-width", 1.5)
+            .attr("d", d3.line()
+              .x(function (d) { return x(d.date) })
+              .y(function (d) { return y(d.value) })
+            )
+
+           //x axis title        
+        svgLineChart.append("text")
+          //.attr("x", "0")
+          //.attr("y", width_for_line_chart + 32)
+          .attr("x", width_for_line_chart/2)
+          .attr("y", height_for_line_chart + 32)
+          .attr("text-anchor", "middle")
+          .attr("font-family", "sans-serif")
+          .attr("font-size", "14px")
+          .attr("font-weight", "bold")
+          .attr("fill", "black")
+          .text("Number of fires");
+
+        //y axis title        
+        svgLineChart.append("text")
+          .attr("x", (-height_for_line_chart / 2 - 10))
+          .attr("transform", "rotate(-90)")
+          .attr("y", -60)
+          .attr("text-anchor", "middle")
+          .attr("font-family", "sans-serif")
+          .attr("font-size", "14px")
+          .attr("font-weight", "bold")
+          .attr("fill", "black")
+          .text("Number of fires");
+
+        //title        
+        svgLineChart.append("text")
+          .attr("x", height_for_line_chart - margin_for_line_chart.left)
+          .attr("y", -10)
+          .attr("text-anchor", "middle")
+          .attr("font-family", "sans-serif")
+          .attr("font-size", "20px")
+          .attr("font-weight", "bold")
+          .attr("fill", "black")
+          .text("Number of fires every year in specific state");
+
+        })
+
+    }
+
+    //initial line chart
+    plotLineChart()
+    ///////////line chart end
+
+    function updateLineChart(abbreviatedStatename){
+      //d3.select("#svgLineChart").selectAll("#text").remove()
+      d3.select("#svgLineChart").selectAll("g").remove()
+      //selectStateForLineChart
+      var svgLineChart = d3.select("#svgLineChart")
+        .append("svg")
+        .attr("width", width_for_line_chart + margin_for_line_chart.left + margin_for_line_chart.right)
+        .attr("height", height_for_line_chart + margin_for_line_chart.top + margin_for_line_chart.bottom)
+        .append("g")
+        .attr("transform",
+          "translate(" + margin_for_line_chart.left + "," + margin_for_line_chart.top + ")");
+      
+      fileNameForLineChart = "./line_graph_data/line_chart_causes_all_years_"+abbreviatedStatename+"_fires_each_state.csv"
+      //fileNameForLineChart = "./line_graph_data/dataForLineGraph.csv"
+      
+
+      //Read the data
+      d3.csv( fileNameForLineChart ,
+
+        // When reading the csv, I must format variables:
+        function (d) {
+          return { date: d3.timeParse("%Y-%m-%d")(d.date), value: d.value }
+        },
+
+        // Now I can use this dataset:
+        function (data) {
+
+          // Add X axis --> it is a date format
+          var x = d3.scaleTime()
+            .domain(d3.extent(data, function (d) { return d.date; }))
+            .range([0, width_for_line_chart]);
+          svgLineChart.append("g")
+            .attr("transform", "translate(0," + height_for_line_chart + ")")
+            .call(d3.axisBottom(x));
+
+          // Add Y axis
+          var y = d3.scaleLinear()
+            .domain([0, d3.max(data, function (d) { return +d.value; })])
+            .range([height_for_line_chart, 0]);
+          svgLineChart.append("g")
+            .call(d3.axisLeft(y));
+
+          // Add the line
+          svgLineChart.append("path")
+            .datum(data)
+            .attr("fill", "none")
+            .attr("stroke", "#e31a1c")
+            .attr("stroke-width", 1.5)
+            .attr("d", d3.line()
+              .x(function (d) { return x(d.date) })
+              .y(function (d) { return y(d.value) })
+            )
+          //x axis title        
+        svgLineChart.append("text")
+          .attr("x", width_for_line_chart/2)
+          .attr("y", height_for_line_chart + 32)
+          .attr("text-anchor", "middle")
+          .attr("font-family", "sans-serif")
+          .attr("font-size", "14px")
+          .attr("font-weight", "bold")
+          .attr("fill", "black")
+          .text("Year");
+
+        //y axis title        
+        svgLineChart.append("text")
+          .transition().duration(250)
+          .attr("x", (-height_for_line_chart / 2 - 10))
+          .attr("transform", "rotate(-90)")
+          .attr("y", -60)
+          .attr("text-anchor", "middle")
+          .attr("font-family", "sans-serif")
+          .attr("font-size", "14px")
+          .attr("font-weight", "bold")
+          .attr("fill", "black")
+          .text("Number of fires");
+
+        //title        
+        svgLineChart.append("text")
+          .attr("x", height_for_line_chart - margin_for_line_chart.left)
+          .attr("y", -10)
+          .attr("text-anchor", "middle")
+          .attr("font-family", "sans-serif")
+          .attr("font-size", "20px")
+          .attr("font-weight", "bold")
+          .attr("fill", "black")
+          .text("Number of fires every year in specific state");
+
+        })
+
+    }
+
+    //listen for changes on line chart
+    d3.select("#selectStateForLineChart").on("change", function () {
+      var selectedOptionState = d3.select(this).property("value")
+      var abbreviatedStatename = getStateAbbreviation(selectedOptionState)
+      //var selectedOptionYear = d3.select("#selectButtonYears").property("value")
+      updateLineChart(abbreviatedStatename)
+    });
 
 
 
