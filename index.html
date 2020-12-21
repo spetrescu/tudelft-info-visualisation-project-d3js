@@ -20,20 +20,13 @@
 
   <style type="text/css">
     body {
-      /* This is the CSS for body */
       position: relative;
       min-width: 900px;
-      /*overflow: hidden;  Overflow set to hidden. Any elements outside of the window will not be shown */
       height: 100%;
-      /* Height set to 100% means the body will extend from the top of the window to the bottom */
       max-height: 100%;
-      /* Maximum height is limited to 100% */
       font-family: 'Montserrat', sans-serif;
-      /* Font used in body is Montserrat */
       line-height: 1.5em;
-      /* Line spacing is set to 1.5em */
       font-size: 18px;
-      /* Font size set to 18px */
     }
 
     .bar {
@@ -84,16 +77,14 @@
       background: #ccc;
     }
 
-    /* #ccc; */
     input[type=range]:hover {
       opacity: .8;
     }
 
-    /* Legend Font Style */
+
     body {
       font: 15px sans-serif;
       background-color: #ffffff;
-
     }
 
     div.tooltip {
@@ -117,7 +108,6 @@
       border-radius: 2px;
     }
 
-    /* Legend Position Style */
     .legend {
       position: absolute;
       left: 20px;
@@ -128,7 +118,6 @@
       font: 10px sans-serif;
     }
 
-    /* On mouse hover, lighten state color */
     path:hover {
       fill-opacity: .5;
     }
@@ -148,10 +137,7 @@
       font-size: 17px;
       border: 1px solid #CCC;
       height: 34px;
-      /* -webkit-appearance: none;
-  -moz-appearance: none; */
       appearance: none;
-      /* background: url(https://stackoverflow.com/favicon.ico) 96% / 15% no-repeat #EEE; */
     }
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.7.1/d3-tip.min.js"></script>
@@ -160,8 +146,6 @@
 
 <body style="background-color:#cccccc" onload="load()">
   <h1>Wildfires in USA in <span id="nRadius-value">1992</span> for <select id="selectButton">ALL CAUSES</select></h1>
-  <!--   
-  <div id="legend1" style="display: inline-block" position="absolute"></div> -->
 
   <div style="position: absolute" style="top: 80px">
     <input type="range" min="1992" max="2015" id="nRadius" step="1" value="1992"> <b><span
@@ -171,18 +155,15 @@
 
   <svg style="border:1px solid black" style="background-position: bottom" width="900" height="500" id="svg3">
     <foreignobject class="node" x="730" y="20" width="200" height="100">
-      <!-- <div style="border:1px green solid">I'm a div inside a SVG.</div>  -->
       <select id="selectButtonStates"></select>
     </foreignobject>
     <foreignobject class="node" x="730" y="60" width="200" height="100">
-      <!-- <div style="border:1px green solid">I'm a div inside a SVG.</div>  -->
       <select id="selectButtonYears"></select>
     </foreignobject>
   </svg>
 
   <svg style="border:1px solid black" style="background-position: bottom" width="900" height="500" id="svgLineChart">
     <foreignobject class="node" x="730" y="20" width="200" height="100">
-      <!-- <div style="border:1px green solid">I'm a div inside a SVG.</div>  -->
       <select id="selectStateForLineChart"></select>
     </foreignobject>
   </svg>
@@ -193,11 +174,8 @@
 
     function getStateAbbreviation(stateName) {
 
-      console.log("SJJJJJJJJJJJ")
       states = ["Alabama", "Alaska", "Arkansas", "Arizona", "California", "Colorado", "Connecticut", "Delaware", "District of Columbia", "Florida", "Georgia", "Hawaii", "Iowa", "Idaho", "Illinois", "Indiana", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", "Missouri", "Mississippi", "Montana", "North Carolina", "North Dakota", "Nebraska", "New Hampshire", "New Jersey", "New Mexico", "Nevada", "New York", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Virginia", "Vermont", "Washington", "Wisconsin", "West Virginia", "Wyoming", "All states"]
       statesAbbreviated = ["AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DC", "DE", "FL", "GA", "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"]
-      //console.log(stateName)
-      //console.log(states.indexOf(stateName))
       if (stateName == "All states")
         return states[states.length - 1]
       return statesAbbreviated[states.indexOf(stateName)];
@@ -220,9 +198,6 @@
         }
         var minVal_barChart = d3.min(dataArray)
         maxVal_barChart = d3.max(dataArray)
-        //maxVal_barChart = 8
-        console.log(minVal_barChart)
-        console.log("IN FUNCTIE" + maxVal_barChart)
 
         // set the ranges
         var y_barChart = d3.scaleBand()
@@ -251,6 +226,7 @@
             "2001", "1999", "1998", "1997",
             "1996", "1995", "1994", "1993",
             "1992"]
+
         // add the options to the button
         d3.select("#selectButtonStates")
           .selectAll('myOptions')
@@ -271,7 +247,6 @@
 
         x_barChart.domain([0, maxVal_barChart])
         y_barChart.domain(data.map(function (d) { return d.Cause; }));
-        //y.domain([0, d3.max(data, function(d) { return d.sales; })]);
 
         // append the rectangles for the bar chart
         var bars = svg3.selectAll(".bar")
@@ -290,10 +265,6 @@
           //.transition().duration(250)
           .attr("transform", "translate(0," + height_for_bar_chart + ")")
           .call(d3.axisBottom(x_barChart));
-
-        // Remove old ones
-        // bars.exit(selectAll("text", xAxis.selectAll("text").remove()))
-
 
 
         // add the y Axis
@@ -336,7 +307,6 @@
           .text("Number of fires by specific causes");
 
 
-        /////borrowed code from below
         svg3.selectAll('rect')
           .on('mouseover', function input() {
             d3.select(this)
@@ -344,7 +314,6 @@
               .style("fill", "#800026");
 
             //add tooltip for exact data
-
             leftMargin = width_for_bar_chart * 0.005
 
             //set up data to show on mouseover
@@ -371,10 +340,7 @@
             d3.select("#tooltip").remove();
           });
 
-
-
       });
-      ///end of horizontal bar chart
     }
 
 
@@ -393,7 +359,6 @@
         for (var d = 0; d < data.length; d++) {
           numberFiresArray.push(parseFloat(data[d].NumOfFires))
           causeArray.push(data[d].Cause)
-          //console.log(data[d].Cause)
         }
         var minVal_barChart = d3.min(numberFiresArray)
         maxVal_barChart = d3.max(numberFiresArray)
@@ -420,7 +385,6 @@
 
         x_barChart.domain([0, maxVal_barChart])
         y_barChart.domain(data.map(function (d) { return d.Cause; }));
-        //y.domain([0, d3.max(data, function(d) { return d.sales; })]);
 
         // append the rectangles for the bar chart
         var bars = svg3.selectAll(".bar")
@@ -472,7 +436,7 @@
         //title        
         svg3.append("text")
           .attr("x", height_for_bar_chart - margin_for_bar_chart.left)
-          .attr("y", 32)
+          .attr("y", -10)
           .attr("text-anchor", "middle")
           .attr("font-family", "sans-serif")
           .attr("font-size", "20px")
@@ -489,7 +453,6 @@
               .style("fill", "#800026");
 
             //add tooltip for exact data
-
             leftMargin = width_for_bar_chart * 0.005
 
             //set up data to show on mouseover
@@ -515,10 +478,7 @@
               .style("fill", "#fc4e2a");
             d3.select("#tooltip").remove();
           });
-
-
       });
-      // console.log("A IESIT")
     }
 
 
@@ -530,7 +490,6 @@
       height_for_line_chart = 500 - margin_for_line_chart.top - margin_for_line_chart.bottom;
 
     function plotLineChart() {
-      //selectStateForLineChart
       var svgLineChart = d3.select("#svgLineChart")
         .append("svg")
         .attr("width", width_for_line_chart + margin_for_line_chart.left + margin_for_line_chart.right)
@@ -589,8 +548,6 @@
 
           //x axis title        
           svgLineChart.append("text")
-            //.attr("x", "0")
-            //.attr("y", width_for_line_chart + 32)
             .attr("x", width_for_line_chart / 2)
             .attr("y", height_for_line_chart + 32)
             .attr("text-anchor", "middle")
@@ -671,9 +628,7 @@
                 .style("fill", "#e31a1c");
               d3.select("#tooltip").remove();
             });
-
         })
-
     }
 
     //initial line chart
@@ -681,7 +636,8 @@
     ///////////line chart end
 
     function updateLineChart(abbreviatedStatename) {
-      //d3.select("#svgLineChart").selectAll("#text").remove()
+
+      //remove 
       d3.select("#svgLineChart").selectAll("g").remove()
       //selectStateForLineChart
       var svgLineChart = d3.select("#svgLineChart")
@@ -693,7 +649,6 @@
           "translate(" + margin_for_line_chart.left + "," + margin_for_line_chart.top + ")");
 
       fileNameForLineChart = "./line_graph_data/line_chart_causes_all_years_" + abbreviatedStatename + "_fires_each_state.csv"
-      //fileNameForLineChart = "./line_graph_data/dataForLineGraph.csv"
 
 
       //Read the data
@@ -1939,31 +1894,10 @@
           // add a legend
           var colorScale2 = d3.scaleSequential(d3.interpolateYlOrRd)
             .domain([minVal, maxVal]);
-          //continuous("#legend1", colorScale2);
         });
 
       });
     }
-
-    // .on('click', function (dis, i, n) {
-    //   d3.selectAll("path").each(function (d) {
-    //     //var a = d["properties"]['value']
-    //     //console.log(d3.select(n[i]).attr("col"))
-    //     var opcaityOnClick = 0.3
-    //     if (d == null) {
-    //       console.log("NK")
-    //       console.log(" is = " + d3.select(n[i]).attr("y"))
-    //     } else if (d["properties"]['value'] > 10000) {
-    //       //d3.select(this).style("opacity", .5)
-    //     }
-    //     if (d3.select(n[i]).attr("y") == 70 && d != null) {
-    //       if (d["properties"]['value'] > 1000) {
-    //         d3.select(this).style("opacity", opcaityOnClick)
-    //       }
-    //       //console.log(d["properties"]['value'])
-    //     }
-
-    //   });
 
     initialMap();
   </script>
