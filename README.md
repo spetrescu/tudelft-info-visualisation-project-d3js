@@ -1,13 +1,12 @@
-# InfoVisProject
+# tudelft-info-visualisation-project-d3js
 
-This is a visualization project, created using JS and the D3 library.
+This is a information visualization project, for the Data Visualisation Course, created using JS and D3.js. <br>
 
-Install VS Code and add the "Go Live" functionality.
-
-Clone the project.
-
-Open VS Code.
-
-Run "Go Live" -> make sure the scope is such that index html is visible.
-
-Enjoy!
+## Project setup
+1. Download and install Visual Studio Code (VS Code)
+2. Clone this repo `git clone https://github.com/spetrescu/tudelft-info-visualisation-project-d3js.git`
+3. Open repo in VS Code
+4. Install `Live Server` extension for VS Code
+5. After enababelling extension => run `Go Live` functionality
+7. Open browser at respective local host port
+8. Enjoy!
