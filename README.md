@@ -7,6 +7,6 @@ This is a information visualization project, for the Data Visualisation Course, 
 2. Clone this repo `git clone https://github.com/spetrescu/tudelft-info-visualisation-project-d3js.git`
 3. Open repo in VS Code
 4. Install `Live Server` extension for VS Code
-5. After enababelling extension => run `Go Live` functionality
+5. After enabling extension => run `Go Live` functionality
 7. Open browser at respective local host port
 8. Enjoy!
