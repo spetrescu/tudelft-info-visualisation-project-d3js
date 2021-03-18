@@ -1,6 +1,6 @@
 # tudelft-info-visualisation-project-d3js
 
-This is an information visualization project, for the Data Visualisation Course, created using JS and D3.js. <br>
+This is an information visualization project, for the Data Visualisation Course, created using mainly D3.js. <br>
 
 ## Project setup
 1. Download and install Visual Studio Code (VS Code)
